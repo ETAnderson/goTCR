@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"github.com/spf13/cobra"
+	"strings"
 )
 
 var rootCmd = &cobra.Command{
@@ -24,6 +25,7 @@ var rootCmd = &cobra.Command{
 }
 
 var message string
+var changesCount int
 
 func getChangesCount() (int, error) {
 	// Run 'git diff' to get the changes
@@ -64,8 +66,12 @@ func commitChanges(message string) {
     return
   }
   // Build the commit message
-  changesCount = getChangesCount()
-  if changesCount == 0 {
+  changesCount,err  := getChangesCount()
+  if err != nil {
+    fmt.Println("Error get changes count:", err)
+	return
+  }
+  if (changesCount == 0) {
   	fmt.Println("Error: no changes detected")
 	return
   }
