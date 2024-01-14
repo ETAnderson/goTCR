@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-
 	"github.com/spf13/cobra"
 )
 
@@ -24,6 +23,22 @@ var rootCmd = &cobra.Command{
   },
 }
 
+var message string
+
+func getChangesCount() (int, error) {
+	// Run 'git diff' to get the changes
+	cmd := exec.Command("git", "diff", "--cached", "--numstat")
+	output, err := cmd.Output()
+	if err != nil {
+		return 0, err
+	}
+
+	// Count the number of lines in the output (each line represents a change)
+	lines := strings.Split(string(output), "\n")
+	changesCount := len(lines) - 1 // Exclude the empty line at the end
+	return changesCount, nil
+}
+
 func main() {
   if err := rootCmd.Execute(); err != nil {
     fmt.Println(err)
@@ -41,13 +56,20 @@ func runTests() bool {
 }
 
 func commitChanges(message string) {
-  // Add all changes to the staging area
+   // Add all changes to the staging area
   cmd := exec.Command("git", "add", ".")
   err := cmd.Run()
   if err != nil {
     fmt.Println("Error adding changes to the staging area:", err)
     return
   }
+  // Build the commit message
+  changesCount = getChangesCount()
+  if changesCount == 0 {
+  	fmt.Println("Error: no changes detected")
+	return
+  }
+  message = fmt.Sprintf("%d changes added",changesCount)
 
   // Commit the changes
   cmd = exec.Command("git", "commit", "-m", message)
