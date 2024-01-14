@@ -76,6 +76,7 @@ func commitChanges(message string) {
 	return
   }
   message = fmt.Sprintf("%d changes added",changesCount)
+  fmt.Println(message)
 
   // Commit the changes
   cmd = exec.Command("git", "commit", "-m", message)
