@@ -13,15 +13,8 @@ var rootCmd = &cobra.Command{
   Short: "Run tests and commit if they pass, revert if they fail",
   Run: func(cmd *cobra.Command, args []string) {
     // Run tests
-    if testsPassed := runTests(); testsPassed {
-            fmt.Println("Tests passed. Committing changes.")
-            commitChanges("Commit changes after successful tests")
-		} else {
-			fmt.Println("Tests failed. Reverting changes.")
-            revertChanges("Revert changes due to test failure")
-            return
-		}
-  },
+ 	runTestsAndCommitOrRevert()
+ },
 }
 
 var message string
@@ -48,13 +41,21 @@ func main() {
   }
 }
 
-func runTests() bool {
-  // Run 'go test' command
-  cmd := exec.Command("go", "test")
-  err := cmd.Run()
+func runTestsAndCommitOrRevert() {
+	// Run 'go test' command
+	cmd := exec.Command("go", "test")
+	err := cmd.Run()
 
-  // Check if the command was successful (exit code 0)
-  return err == nil
+	// Check if the command was successful (exit code 0)
+	if err == nil {
+		// All tests passed, commit changes
+		commitChanges()
+	} else {
+		// Tests failed, revert changes
+		revertChanges()
+		fmt.Println("Tests failed. Changes reverted.")
+		os.Exit(1)
+	}
 }
 
 func commitChanges(message string) {
