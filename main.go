@@ -97,7 +97,7 @@ func commitChanges(message string) {
   fmt.Println("Changes committed successfully.")
 }
 
-func revertChanges() {
+func revertChanges(message string) {
   // Revert changes
   cmd := exec.Command("git", "reset", "--hard", "HEAD")
   err := cmd.Run()
