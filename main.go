@@ -21,14 +21,6 @@ var rootCmd = &cobra.Command{
             revertChanges("Revert changes due to test failure")
             return
 		}
-    if !runTests() {
-      fmt.Println("Tests failed. Reverting changes.")
-      revertChanges("Revert changes due to test failure")
-      return
-    }
-
-    fmt.Println("Tests passed. Committing changes.")
-    commitChanges("Commit changes after successful tests")
   },
 }
 
